@@ -5,7 +5,9 @@ app = Flask(__name__)
 
 @app.route("/ping")
 def ping():
-    return "server is runninggggg"
+
+    return "server is working123"
+
 
 
 if __name__ == '__main__':
