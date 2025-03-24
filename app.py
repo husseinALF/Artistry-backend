@@ -8,6 +8,9 @@ def ping():
 
     return "server is running"
 
+@app.route("/home")
+def home():
+   return "Welcome to the home page"
 
 
 if __name__ == '__main__':
