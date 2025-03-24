@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route("/ping")
 def ping():
 
-    return "server is working123"
+    return "server is running"
 
 @app.route("/home")
 def home():
