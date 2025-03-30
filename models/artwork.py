@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.config.db import db
+from config.db import db
 
 class Artwork(db.Model):
     id = db.Column(db.Integer, primary_key=True)

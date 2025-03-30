@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
-from app.config.db import db
-from app.models.artwork import Artwork
-from app.models.user import User
+from config.db import db
+from models.artwork import Artwork
+from models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
 from werkzeug.utils import secure_filename
