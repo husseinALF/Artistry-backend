@@ -138,3 +138,27 @@ def delete_artwork(artwork_id):
     
     return jsonify({'message': 'Konstverket har tagits bort'}), 200
 
+def get_user_artworks():
+    current_user_id = get_jwt_identity()
+    
+    try:
+        current_user_id = int(current_user_id)
+    except:
+        return jsonify({'message': 'Ogiltigt användar-ID'}), 400
+    
+    user = User.query.get(current_user_id)
+    
+    if not user:
+        return jsonify({'message': 'Användare hittades inte'}), 404
+    
+    artworks = Artwork.query.filter_by(user_id=current_user_id).all()
+    
+    return jsonify({
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        },
+        'artworks': [artwork.to_dict() for artwork in artworks]
+    }), 200 
+
