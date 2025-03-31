@@ -58,7 +58,7 @@ def create_artwork():
         file_content = file.read()
         file_size = len(file_content)
         
-        if file_size > 10 * 1024 * 1024: 
+        if file_size > 10 * 1024 * 1024:  
             return jsonify({'message': 'Filen är för stor. Max 10 MB tillåtet.'}), 413
         
         file.seek(0)
@@ -84,3 +84,57 @@ def create_artwork():
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'Ett fel uppstod: {str(e)}'}), 500
+
+@gallery_bp.route('/<int:artwork_id>', methods=['PUT'])
+@jwt_required()
+def update_artwork(artwork_id):
+    current_user_id = get_jwt_identity()
+    
+    try:
+        current_user_id = int(current_user_id)
+    except:
+        return jsonify({'message': 'Ogiltigt användar-ID'}), 400
+    
+    artwork = Artwork.query.get(artwork_id)
+    
+    if not artwork:
+        return jsonify({'message': 'Konstverket hittades inte'}), 404
+    
+    if artwork.user_id != current_user_id:
+        return jsonify({'message': 'Du har inte behörighet att ändra detta konstverk'}), 403
+    
+    data = request.get_json()
+    
+    if 'title' in data:
+        artwork.title = data['title']
+    
+    if 'description' in data:
+        artwork.description = data['description']
+    
+    db.session.commit()
+    
+    return jsonify(artwork.to_dict()), 200
+
+@gallery_bp.route('/<int:artwork_id>', methods=['DELETE'])
+@jwt_required()
+def delete_artwork(artwork_id):
+    current_user_id = get_jwt_identity()
+    
+    try:
+        current_user_id = int(current_user_id)
+    except:
+        return jsonify({'message': 'Ogiltigt användar-ID'}), 400
+    
+    artwork = Artwork.query.get(artwork_id)
+    
+    if not artwork:
+        return jsonify({'message': 'Konstverket hittades inte'}), 404
+    
+    if artwork.user_id != current_user_id:
+        return jsonify({'message': 'Du har inte behörighet att ta bort detta konstverk'}), 403
+    
+    db.session.delete(artwork)
+    db.session.commit()
+    
+    return jsonify({'message': 'Konstverket har tagits bort'}), 200
+
