@@ -3,6 +3,7 @@ from config.db import db
 from models.artwork import Artwork
 from models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import cross_origin
 import os
 from werkzeug.utils import secure_filename
 import uuid
@@ -138,7 +139,15 @@ def delete_artwork(artwork_id):
     
     return jsonify({'message': 'Konstverket har tagits bort'}), 200
 
+@gallery_bp.route('/user/artworks', methods=['GET', 'OPTIONS'])
+@cross_origin(supports_credentials=True)
+@jwt_required()
 def get_user_artworks():
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+    
     current_user_id = get_jwt_identity()
     
     try:
@@ -160,5 +169,5 @@ def get_user_artworks():
             'email': user.email
         },
         'artworks': [artwork.to_dict() for artwork in artworks]
-    }), 200 
+    }), 200
 
